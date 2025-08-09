@@ -1,0 +1,64 @@
+# Disable the newline at the start of the prompt for a compact look
+add_newline = false
+
+# Global configuration for the prompt
+# Increasing command execution timeout, useful for Conda and other modules
+command_timeout = 2000
+
+# Specify the order of prompt components for minimalism and relevance
+format = """
+$conda\
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$python\
+$line_break\
+$character\
+"""
+
+# Username module: display the user, always
+[username]
+show_always = true
+style_user = "fg:#fabd2f" # Gruvbox yellow for emphasis on user
+style_root = "fg:#fb4934" # Example style for root user
+format = "[$user]($style)@"
+
+# Hostname module: display the hostname, useful for knowing when you're shelled into another host
+[hostname]
+ssh_only = false
+# detect_env_vars = ['SSH_CONNECTION'] # show hostname when sshed to a host
+style = "fg:#d3869b" # Gruvbox purple for hostname, stands out but not too stark
+format = "[$hostname]($style): "
+
+# Conda environment: show the active Conda environment
+[conda]
+format = '\([$environment]($style)\) '
+style = "fg:#8ec07c" # Gruvbox green, good for indicating active environments
+
+# Python version: because it's your primary language
+[python]
+format = "[🐍 $version]($style) "
+style = "fg:#fe8019" # Gruvbox orange for Python version, lively and clear
+
+# Directory module: concise, displaying only the folder you're in
+[directory]
+fish_style_pwd_dir_length = 1
+truncation_length = 0
+format = "[$path]($style) "
+style = "fg:#83a598" # Gruvbox aqua, for a calming effect on paths
+
+# Git branch and status: for version control awareness
+[git_branch]
+format = '\([$branch]($style)\)'
+style = "fg:#b8bb26" # Gruvbox green, a different shade for distinction
+[git_status]
+format = '\[([$all_status]($style))\] '
+style = "fg:#fb4934" # Gruvbox red for changes, very attention-grabbing
+
+# Character module: change prompt character for root or normal user
+[character]
+success_symbol = "[➜](fg:#b8bb26)" # Gruvbox green for success
+error_symbol = "[✗](fg:#fb4934)" # Gruvbox red for error
+
