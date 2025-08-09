@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args:
+          - --baseline
+          - .secrets.baseline
+        exclude: |
+          (^\.git/|\.DS_Store$)
+
+  # Optional: guard against missing baseline
+  - repo: local
+    hooks:
+      - id: ensure-secrets-baseline
+        name: ensure .secrets.baseline exists
+        entry: bash -c 'test -f .secrets.baseline || { echo ".secrets.baseline missing"; exit 1; }'
+        language: system
+        pass_filenames: false
