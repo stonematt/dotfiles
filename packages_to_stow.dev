@@ -1,0 +1,17 @@
+alacritty/
+aws/
+bash/
+bat/
+ghostty/
+git/
+nvim/
+ripgrep/
+starship/
+stow/
+tmux/
+vim/
+aerospace/
+btop/
+conda/
+espanso/
+ssh/

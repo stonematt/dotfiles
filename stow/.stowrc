@@ -1,0 +1,4 @@
+--dir=$HOME/dev/homeDir/dotfiles
+--target=$HOME
+--verbose
+--ignore=.DS_Store
