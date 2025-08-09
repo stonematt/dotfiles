@@ -2,3 +2,9 @@
 *.swp
 *.swo
 __pycache__/
+
+lazy-lock.json
+dotfiles_and_config_backup.tgz
+secrets
+.secrets/
+
