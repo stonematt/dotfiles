@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Reproducible backup of a dotfiles repo (no secrets), macOS/Linux friendly.
+
+set -Eeuo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: bu_env_terminal_config [-o /path/to/output.tgz] [path_to_dotfiles_repo]
+Options:
+  -o, --out FILE   Output archive path (default: /tmp/dotfiles_backup.tgz)
+  -h, --help       Show help
+Notes:
+  - Produces a reproducible tar.gz (fixed mtimes/owners, sorted).
+  - Excludes common secret/garbage files.
+EOF
+}
+
+OUT=/tmp/dotfiles_backup.tgz
+REPO=${1:-}
+
+# Parse flags
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  -o | --out)
+    OUT="$2"
+    shift 2
+    ;;
+  --)
+    shift
+    break
+    ;;
+  -*)
+    echo "Unknown option: $1" >&2
+    usage
+    exit 2
+    ;;
+  *)
+    REPO="$1"
+    shift
+    ;;
+  esac
+done
+
+[[ -z "${REPO:-}" ]] && REPO="$(pwd)"
+[[ -d "$REPO" ]] || {
+  echo "Error: '$REPO' is not a directory" >&2
+  exit 1
+}
+OUT_DIR="$(dirname "$OUT")"
+mkdir -p "$OUT_DIR"
+
+# Pick tar impl
+tar_bin=tar
+if tar --version 2>/dev/null | grep -qi 'gnu'; then
+  TAR_FLAVOR=gnu
+elif command -v gtar >/dev/null && gtar --version 2>/dev/null | grep -qi 'gnu'; then
+  tar_bin=gtar
+  TAR_FLAVOR=gnu
+else
+  TAR_FLAVOR=bsd
+fi
+
+# Shared excludes
+EXCLUDES=(
+  --exclude=.git --exclude=.gitmodules --exclude=.DS_Store
+  --exclude='*.swp' --exclude='*.swo' --exclude='*.log'
+  --exclude='*.tgz' --exclude='*.tar.gz'
+  --exclude='__pycache__' --exclude='.pytest_cache' --exclude='.mypy_cache'
+  --exclude='.venv' --exclude='node_modules' --exclude='.cache'
+  --exclude='secrets' --exclude='*.env' --exclude='.env*'
+  --exclude='*.key' --exclude='*.pem' --exclude='id_*'
+  --exclude='oauth*.json' --exclude='*.sqlite'
+)
+
+# Reproducibility knobs
+MTIME='@2000-01-01 00:00:00'
+
+echo "Creating archive -> $OUT"
+if [[ "$TAR_FLAVOR" == gnu ]]; then
+  # Requires GNU tar
+  "$tar_bin" -C "$REPO" \
+    --sort=name --mtime="$MTIME" --owner=0 --group=0 --numeric-owner \
+    "${EXCLUDES[@]}" -cf - . |
+    gzip -n >"$OUT"
+else
+  # BSD tar (macOS): no --sort/--mtime; still exclude & gzip -n
+  # Best-effort: ensure stable cwd and permissions first.
+  (cd "$REPO" && tar "${EXCLUDES[@]}" -cf - .) | gzip -n >"$OUT"
+fi
+
+# Show result
+du -sh "$OUT" 2>/dev/null || ls -lh "$OUT"
+echo "OK: $OUT"
