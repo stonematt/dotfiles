@@ -1,0 +1,12 @@
+[user]
+	name = Matt Stone
+	email = mstone@stonecover.com
+[pull]
+	rebase = true
+[core]
+	excludesfile = /Users/mstone/.gitignore_global
+[alias]
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	adog = log --all --decorate --oneline --graph
+[credential]
+	helper = osxkeychain

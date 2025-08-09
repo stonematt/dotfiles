@@ -1,0 +1,13 @@
+.DS_Store
+*.vscode
+node_modules
+Library/**
+Library/
+.streamlit/
+.secrets/
+secrets/
+
+################
+# Temp Files
+*.swp
+*~
