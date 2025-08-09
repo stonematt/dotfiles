@@ -1,0 +1,29 @@
+# Force color output even when piped
+--color=always
+
+# Ignore case by default in searches
+--ignore-case
+
+# Show line numbers in output
+--line-number
+
+# Search hidden files and directories
+--hidden
+
+# Follow symbolic links
+--follow
+
+# Exclude specific file types or directories (optional)
+--glob=!node_modules
+--glob=!*.log
+
+# Limit output to 1000 matches (useful for very large files)
+--max-count=1000
+
+# Display file names only (can be overridden on the command line)
+--files-with-matches
+
+# Highlight matches with a different color (optional)
+--colors 'match:fg:green'
+--colors 'match:style:bold'
+
